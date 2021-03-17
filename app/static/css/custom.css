@@ -1,0 +1,37 @@
+body{
+     background-image: url('../images/fon.png');
+     background-size: 100%;
+}
+.info_about_me{
+    color:white;
+    font-size:25px;
+    width:70%;
+    position:absolute;
+    display:inline-block;
+}
+.my_achievement{
+    color:white;
+    font-size:25px;
+    position:absolute;
+    display:inline-block;
+}
+.achievement_img{
+    width:512px;
+    height:512px
+}
+.fon{
+    width:100%;
+}
+.label{
+color:white;
+font-size:25px;
+}
+.errors{
+color:white;
+}
+.flash_message{
+color:white;
+}
+.table_form{
+color:white;
+}

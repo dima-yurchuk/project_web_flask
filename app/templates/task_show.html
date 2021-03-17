@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{%block title%}Контактна форма{% endblock %}
+{%block contact_form%}
+{%from "_render_field.html" import render_field%}
+ <div class="form-wrapper" align="center">
+     <br>
+     <table class="table table-striped w-auto" border="3" align="center">
+  <thead>
+    <tr>
+        <td class="table_form" scope="col">Id</td>
+      <td class="table_form" scope="col">Title</td>
+        <td class="table_form" scope="col">Description</td>
+         <td class="table_form" scope="col">Created</td>
+      <td class="table_form" scope="col">Priority</td>
+        <td class="table_form" scope="col">Is Done</td>
+    </tr>
+  </thead>
+  <tbody>
+
+  <tr>
+      <td class="table_form">{{task.id}}</td>
+       <td class="table_form">{{task.title}}</td>
+      <td class="table_form">{{task.description}}</td>
+      <td class="table_form">{{task.created}}</td>
+       <td class="table_form">{{task.priority}}</td>
+       <td class="table_form">{{task.is_done}}</td>
+  </tr>
+  </tbody>
+</table>
+     <a href="/task/{{ task.id }}/update" class="btn btn-primary fs-5"> Edit </a>
+     <a href="/task/{{ task.id }}/delete" class="btn  btn-danger fs-5"> Delete </a>
+<!--     <form action="{{ url_for('task_update', id=task.id) }}">-->
+<!--        <input  class="btn btn-primary" type="submit" value="Edit" />-->
+<!--     </form>-->
+<!--     <form action="{{ url_for('task_delete', id=task.id) }}">-->
+<!--         <input  class="btn btn-danger" type="submit" value="Delete" />-->
+<!--     </form>-->
+</div>
+
+{% endblock %}

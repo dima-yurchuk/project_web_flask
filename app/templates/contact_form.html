@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{%block title%}Контактна форма{% endblock %}
+{%block contact_form%}
+{%from "_render_field.html" import render_field%}
+ <div class="form-wrapper" align="center">
+
+      <form method="POST" action="{{ url_for('contact') }}">
+               {{form.csrf_token}}
+
+              {%if cookie_name is none%}
+                  {{ render_field(form.name) }}
+                  {{ render_field(form.email) }}
+                  {{ render_field(form.body) }}
+              {%else%}
+               {{ render_field(form.body) }}
+              {%endif%}
+          <br>
+          {{ form.submit(class="btn btn-light btn-lg") }}
+
+      </form>
+    </div>
+{% endblock %}

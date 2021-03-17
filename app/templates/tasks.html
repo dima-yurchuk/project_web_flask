@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{%block title%}Контактна форма{% endblock %}
+{%block contact_form%}
+{%from "_render_field.html" import render_field%}
+ <div class="form-wrapper" align="center">
+     <br>
+     <form action="{{ url_for('task_create') }}">
+        <input  class="btn btn-light btn-lg" type="submit" value="Додати завдання" />
+     </form>
+     <br>
+     <table class="table table-striped w-auto" border="3" align="center">
+  <thead>
+    <tr>
+      <td class="table_form" scope="col">Title</td>
+      <td class="table_form" scope="col">Priority</td>
+        <td class="table_form" scope="col">Is Done</td>
+    </tr>
+  </thead>
+  <tbody>
+  {% for elem in tasks %}
+  <tr>
+       <td class="table_form"><a href="/task/{{elem.id}}">{{elem.title}}</a></td>
+       <td class="table_form">{{elem.priority}}</td>
+       <td class="table_form">{{elem.is_done}}</td>
+  </tr>
+  {%endfor%}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}

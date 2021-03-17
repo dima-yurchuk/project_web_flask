@@ -1,0 +1,15 @@
+{% macro render_field(field)%}
+
+<fieldset class="form-field" style="width:50%;">
+  <div class="label">{{ field.label }}</div>
+      {{ field}}
+</fieldset>
+          {%if field.errors%}
+          <div class="errors">
+              {%for error in field.errors%}
+              {{error}}
+              {%endfor%}
+          </div>
+          {%endif%}
+
+{% endmacro %}

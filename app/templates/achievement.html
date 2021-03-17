@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{%block title%}Мої досягнення{% endblock %}
+
+{%block menu%}
+{%for elem in menu%}
+  <a href="{{menu[elem]}}">{{elem}}</a><br>
+{% endfor %}
+{% endblock %}
+
+{%block achievement%}
+<img class="achievement_img" src="static/images/achievement.jpg">
+<div class="my_achievement">
+    <ul>
+      <li>Вмію добре керувати машиною</li><br>
+      <li>Частково знаю 5 мов програмування</li><br>
+      <li>Отримав золоту медаль у школі</li><br>
+      <li>Вмію плавати</li><br>
+      <li>Навчився збирати кубика-рубика</li><br>
+      <li>Під час навчання у школі зайняв багато призових місць у міських олімпіадах</li>
+    </ul>
+</div>
+{% endblock %}
