@@ -14,6 +14,8 @@
          <td class="table_form" scope="col">Created</td>
       <td class="table_form" scope="col">Priority</td>
         <td class="table_form" scope="col">Is Done</td>
+        <td class="table_form" scope="col">Category</td>
+          <td class="table_form" scope="col">Employers</td>
     </tr>
   </thead>
   <tbody>
@@ -25,6 +27,12 @@
       <td class="table_form">{{task.created}}</td>
        <td class="table_form">{{task.priority}}</td>
        <td class="table_form">{{task.is_done}}</td>
+       <td class="table_form">{{task.category_backref.name}}</td>
+      <td class="table_form">
+           {% for empl in task.employee_backref %}
+               <a href="/employee/{{ empl.id }}">{{empl.name}}</a>
+           {%endfor%}
+       </td>
   </tr>
   </tbody>
 </table>
