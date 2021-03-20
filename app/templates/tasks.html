@@ -26,7 +26,7 @@
   {% for task in tasks %}
   <tr>
        <td class="table_form">{{task.id}}</td>
-       <td class="table_form"><a href="/task/{{task.id}}">{{task.title}}</a></td>
+       <td class="table_form"><a class="href_in_background" href="/task/{{task.id}}">{{task.title}}</a></td>
        <td class="table_form">{{task.description}}</td>
        <td class="table_form">{{task.created}}</td>
        <td class="table_form">{{task.priority.name}}</td>
@@ -34,7 +34,7 @@
        <td class="table_form">{{task.category_backref.name}}</td>
        <td class="table_form">
            {% for empl in task.employee_backref %}
-               <a href="/employee/{{ empl.id }}">{{empl.name}}</a>
+               <a class="href_in_background" href="/employee/{{ empl.id }}">{{empl.name}}</a>
            {%endfor%}
        </td>
   </tr>

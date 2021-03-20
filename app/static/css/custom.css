@@ -35,3 +35,9 @@ color:white;
 .table_form{
 color:white;
 }
+.href_in_background{
+color: #adddb8;
+}
+.href_in_background:hover {
+color: white;
+}

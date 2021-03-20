@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextField, SubmitField, TextAreaField, BooleanField, SelectField, IntegerField, SelectMultipleField
+from wtforms import StringField, TextField, SubmitField, TextAreaField, \
+    BooleanField, SelectField, IntegerField, SelectMultipleField, PasswordField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import DataRequired, Length, Email, Optional
+from wtforms.validators import DataRequired, Length, Email, Optional, EqualTo
 from datetime import datetime
 from .models import Task, Category, Employee
 from . import db
@@ -36,6 +37,10 @@ class ContactForm(FlaskForm):
 
 
 class FormTaskCreate(FlaskForm):
+    # def __init__(self, category, *args, **kwargs):
+    #     super().__init__(self, *args, **kwargs)
+    #     self.category=category
+    #
     title = StringField(
             'Title',
             validators=[DataRequired(message="Поле не можу бути пустим!")],
@@ -134,3 +139,40 @@ class EmployeeCreate(FlaskForm):
     )
     submit = SubmitField('Submit')
 
+
+class RegistrationForm(FlaskForm):
+    username = StringField(
+        'Username',
+        validators=[Length(min=3, max=30,
+        message='Поле повинно бути довжиною від 3 до 30 симолів!'),
+        DataRequired(message="Це поле є обов'язковим!")
+        ]
+    )
+    email = StringField(
+        'Email',
+        validators=[DataRequired(), Email(message='Некоректна email адреса!')]
+    )
+    password = PasswordField(
+        'Password',
+        validators=[Length(min=8,
+        message='Поле повинно бути довжиною більше 8 символів!'),
+                    DataRequired(message="Це поле є обов'язковим!")]
+    )
+    confirm_password = PasswordField(
+        'Confirm password',
+        validators=[DataRequired(), EqualTo('password')]
+    )
+    submit = SubmitField('Sing up')
+
+
+class LoginForm(FlaskForm):
+    email = StringField(
+        'Email',
+        validators=[DataRequired(), Email(message='Некоректна email адреса!')]
+    )
+    password = PasswordField(
+        'Password',
+        validators=[DataRequired(message="Це поле є обов'язковим!")]
+    )
+    remember =  BooleanField('Remember me')
+    submit = SubmitField('Login')

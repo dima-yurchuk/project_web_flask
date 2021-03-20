@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{%block title%}Контактна форма{% endblock %}
+{%block contact_form%}
+{%from "_render_field.html" import render_field%}
+ <div class="form-wrapper" align="center">
+     <br>
+      <form action="{{ url_for('category_create') }}">
+        <input  class="btn btn-light btn-lg" type="submit" value="Додати категорію" />
+     </form>
+     <br>
+     <table class="table table-striped w-auto" border="3" align="center">
+  <thead>
+    <tr>
+      <td class="table_form" scope="col">Name</td>
+    </tr>
+  </thead>
+  <tbody>
+  {% for elem in categories %}
+  <tr>
+       <td class="table_form"><a class="href_in_background" href="/category/{{elem.id}}">{{elem.name}}</a></td>
+  </tr>
+  {%endfor%}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}

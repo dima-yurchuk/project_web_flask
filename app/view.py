@@ -3,13 +3,13 @@ from datetime import datetime, date
 import sys
 import os
 from app import app
-from app.forms import ContactForm, FormTaskCreate, FormTaskUpdate, CategoryCreate, EmployeeCreate
+from app.forms import ContactForm, FormTaskCreate, FormTaskUpdate,CategoryCreate, EmployeeCreate, RegistrationForm,LoginForm
 from .models import Task, Category, Employee, association_table
 from . import db
 import json
 from sqlalchemy import case
 # app = Flask(__name__)
-menu = {'Головна':'/', 'Коротка інформація':'/info', 'Мої досягнення':'/achievement', 'Contact':'/contact', 'FormTask':'/task'}
+menu = {'Головна':'/', 'Коротка інформація':'/info', 'Мої досягнення':'/achievement', 'Contact':'/contact', 'FormTask':'/task', 'Login':'/login'}
 today = date.today()
 age = today.year - 2001 - ((today.month, today.day) < (4, 14))
 @app.route('/')
@@ -168,9 +168,10 @@ def category_show(id):
 @app.route('/employee/<int:id>', methods=["GET", "POST"])
 def employee_show(id):
     employee = Employee.query.get_or_404(id)
-    tasks = db.session.query(Task).filter(Task.employee_backref.contains(employee)).all()
+    # tasks = db.session.query(Task).filter(Task.employee_backref.contains(employee)).all()
+    tasks = db.session.query(Task).filter(Task.employee_backref.contains(employee))
     print(tasks)
-    return render_template('employee_show.html', menu=menu, employee=employee, tasks=tasks, len_tasks=len(tasks))
+    return render_template('employee_show.html', menu=menu, employee=employee, tasks=tasks, len_tasks=db.session.query(Task).filter(Task.employee_backref.contains(employee)).count())
 
 @app.route('/task/<int:id>/update', methods=["GET", "POST"])
 def task_update(id):
@@ -292,3 +293,20 @@ def employee_delete(id):
     except:
         flash('Error while employee deleted!', 'error')
     return redirect(url_for('employee'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        flash(f'Account cereated for {form.username.data}!', category='seccess')
+        redirect(url_for('login'))
+    render_template('register.html', form=form, title='Register', menu=menu)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.email.data == 'test@gmail.com' and form.password.data=='11111111':
+            flash('You have been logged in!', category='seccess')
+            return redirect(url_for('index'))
+    return render_template('login.html', form=form, menu=menu, title='Login')
