@@ -4,7 +4,7 @@ import sys
 import os
 from app import app
 from app.forms import ContactForm, FormTaskCreate, FormTaskUpdate,CategoryCreate, EmployeeCreate, RegistrationForm,LoginForm
-from .models import Task, Category, Employee, association_table
+from .models import Task, Category, Employee, User
 from . import db
 import json
 from sqlalchemy import case
@@ -297,16 +297,35 @@ def employee_delete(id):
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    if form.validate_on_submit():
-        flash(f'Account cereated for {form.username.data}!', category='seccess')
-        redirect(url_for('login'))
-    render_template('register.html', form=form, title='Register', menu=menu)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            username = form.username.data
+            email = form.email.data
+            password = form.password.data
+            user = User(username=username, email=email, password=password)
+            try:
+                db.session.add(user)
+                db.session.commit()
+                flash(f'Account cereated for {form.username.data}!', category='seccess')
+            except:
+                db.session.rollback()
+                flash('Error adding data in DB!', 'error')
+            return redirect(url_for('login'))
+    return render_template('register.html', form=form, title='Register', menu=menu)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        if form.email.data == 'test@gmail.com' and form.password.data=='11111111':
-            flash('You have been logged in!', category='seccess')
-            return redirect(url_for('index'))
-    return render_template('login.html', form=form, menu=menu, title='Login')
+        email = form.email.data
+        password = form.password.data
+        email_in_db = User.query.filter(User.email==email).first()
+        if email_in_db is None:
+            flash('Некоректні дані!', category='error')
+            return redirect(url_for('login'))
+        elif email_in_db.veryfy_password(password):
+            flash('Ви успішно ввійшли!', category='seccess')
+            return redirect(url_for('task'))
+        else:
+            flash('Неправильний пароль!', category='error')
+    return render_template('login.html', menu=menu, form=form, title='Login')

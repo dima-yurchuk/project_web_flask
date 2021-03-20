@@ -3,17 +3,43 @@
 {%block title%}{% endblock %}
 {%block contact_form%}
 {%from "_render_field.html" import render_field%}
- <div class="form-wrapper" align="center">
+
+ <div class="form-login" align="center">
       <form method="POST" action="{{ url_for('login') }}">
-                  {{form.csrf_token}}
-                  {{ render_field(form.email) }}
-                  {{ render_field(form.password) }}
+                 {{form.csrf_token}}
+          <div class="form_label" >{{form.email.label}}</div>
+                  {{ render_field(form.email(class="form-control", placeholder="email")) }}
+<!--          ДЛЯ ВИВОДУ ПОВІДОМЛЕНЬ ПРО ПОМИЛКИ-->
+          <div class="error_form">
+            {%for error in form.errors['email']%}
+                {{error}}
+            {%endfor%}
+          </div>
+          <div class="form_label">{{form.password.label}}</div>
+                  {{ render_field(form.password(class="form-control", placeholder="password")) }}
+          <div class="error_form">
+            {%for error in form.errors['password']%}
+                {{error}}
+            {%endfor%}
+          </div>
                   {{ render_field(form.remember) }}
           <br>
           {{ form.submit(class="btn btn-light btn-lg") }}<br><br>
-          <a href="/register" class="btn btn-info fs-5"> Sing in </a>
+          <a href="/register" class="btn btn-secondary fs-5"> Sing up </a><br><br>
       </form>
      </div>
+<!--<div class="form-wrapper" align="center">-->
+
+<!--      <form method="POST" action="{{ url_for('login') }}">-->
+<!--               {{form.csrf_token}}-->
+<!--                  {{ render_field(form.email) }}-->
+<!--                  {{ render_field(form.password) }}-->
+<!--                  {{ render_field(form.remember) }}-->
+<!--          <br>-->
+<!--          {{ form.submit(class="btn btn-light btn-lg") }}-->
+
+<!--      </form>-->
+<!--    </div>-->
 <br>
 
 {% endblock %}

@@ -41,3 +41,20 @@ color: #adddb8;
 .href_in_background:hover {
 color: white;
 }
+
+.form-login{
+    background-color:rgba(197, 217, 226, 0.3);
+    width:25%;
+    height:auto;
+    border-radius:20px;
+    position:absolute;
+    top:10%;
+    left:35%;
+}
+.form_label{
+    color:white;
+     font-size:30px;
+}
+.error_form{
+    color:#ecb9af;
+}

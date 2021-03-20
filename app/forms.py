@@ -2,9 +2,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextField, SubmitField, TextAreaField, \
     BooleanField, SelectField, IntegerField, SelectMultipleField, PasswordField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import DataRequired, Length, Email, Optional, EqualTo
+from wtforms.validators import DataRequired, Length, Email, Optional, EqualTo, \
+    ValidationError, Regexp
 from datetime import datetime
-from .models import Task, Category, Employee
+from .models import Task, Category, Employee, User
 from . import db
 
 class ContactForm(FlaskForm):
@@ -143,9 +144,10 @@ class EmployeeCreate(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField(
         'Username',
-        validators=[Length(min=3, max=30,
-        message='Поле повинно бути довжиною від 3 до 30 симолів!'),
-        DataRequired(message="Це поле є обов'язковим!")
+        validators=[Length(min=3, max=30,message='Поле повинно бути довжиною від 3 до 30 симолів!'),
+        DataRequired(message="Це поле є обов'язковим!"),
+        Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+               "Ім'я повинно містити тільки англійські літери, цифри, крапку або нижнє підкреслення!")
         ]
     )
     email = StringField(
@@ -163,12 +165,18 @@ class RegistrationForm(FlaskForm):
         validators=[DataRequired(), EqualTo('password')]
     )
     submit = SubmitField('Sing up')
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('Email уже існує!')
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError("Користувач з таким ім'я вже існує!")
 
 
 class LoginForm(FlaskForm):
     email = StringField(
         'Email',
-        validators=[DataRequired(), Email(message='Некоректна email адреса!')]
+        validators=[DataRequired(),  Email(message='Некоректна email адреса!')]
     )
     password = PasswordField(
         'Password',
