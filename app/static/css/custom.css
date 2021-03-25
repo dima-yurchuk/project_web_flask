@@ -48,7 +48,6 @@ color: white;
     height:auto;
     border-radius:20px;
     position:absolute;
-    top:10%;
     left:35%;
 }
 .form_label{
@@ -57,4 +56,7 @@ color: white;
 }
 .error_form{
     color:#ecb9af;
+}
+.account_user{
+    color:white;
 }

@@ -8,6 +8,7 @@ from .models import Task, Category, Employee, User
 from . import db
 import json
 from sqlalchemy import case
+from flask_login import login_user, current_user, logout_user, login_required
 # app = Flask(__name__)
 menu = {'Головна':'/', 'Коротка інформація':'/info', 'Мої досягнення':'/achievement', 'Contact':'/contact', 'FormTask':'/task', 'Login':'/login'}
 today = date.today()
@@ -296,6 +297,8 @@ def employee_delete(id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form = RegistrationForm()
     if request.method == "POST":
         if form.validate_on_submit():
@@ -315,17 +318,37 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-        email_in_db = User.query.filter(User.email==email).first()
-        if email_in_db is None:
+        user_in_db = User.query.filter(User.email==email).first()
+        if user_in_db is None:
             flash('Некоректні дані!', category='error')
             return redirect(url_for('login'))
-        elif email_in_db.veryfy_password(password):
-            flash('Ви успішно ввійшли!', category='seccess')
+        elif user_in_db.veryfy_password(password):
+            login_user(user_in_db, remember=form.remember.data)
+            del menu['Login']
+            menu['Профіль'] = '/account'
+            menu['Вихід'] = '/logout'
+            flash('Ви успішно ввійшли!', category='success')
             return redirect(url_for('task'))
         else:
             flash('Неправильний пароль!', category='error')
     return render_template('login.html', menu=menu, form=form, title='Login')
+
+@app.route('/logout')
+def logout():
+    del menu['Профіль']
+    del menu['Вихід']
+    menu['Login'] = '/login'
+    logout_user()
+    flash('Ви вийшли зі свого акаунту!')
+    return redirect(url_for("task"))
+
+@app.route("/account")
+@login_required
+def account():
+    return render_template('account.html',  menu=menu, title='Account')

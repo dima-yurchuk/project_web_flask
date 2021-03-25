@@ -2,7 +2,8 @@ from . import db
 import enum
 from datetime import datetime
 from flask_bcrypt import Bcrypt
-from app import app
+from app import app, login_manager
+from flask_login import UserMixin
 
 bcrypt = Bcrypt(app)
 class MyEnum(enum.Enum):
@@ -47,7 +48,11 @@ class Employee(db.Model):
         return f'<Task {self.id} {self.name} {self.count_of_completed_tasks}>'
 
 
-class User(db.Model):
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
     def __init__(self, username, email, password):
         self.username=username
         self.email=email
