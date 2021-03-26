@@ -84,17 +84,6 @@ def category():
 @app.route('/employee', methods=["GET", "POST"])
 def employee():
     employers = Employee.query.all()
-    for empl in employers:
-        tasks = db.session.query(Task).filter(Task.employee_backref.contains(empl))
-        count_completed_task = 0
-        for task in tasks:
-            if task.is_done:
-                count_completed_task += 1
-        try:
-            empl.count_of_completd_task = count_completed_task
-            db.session.commit()
-        except:
-            pass
     return render_template('employers.html', title='Список категорій', menu=menu,  employers=employers)
 
 
@@ -188,15 +177,6 @@ def employee_show(id):
     employee = Employee.query.get_or_404(id)
     # tasks = db.session.query(Task).filter(Task.employee_backref.contains(employee)).all()
     tasks = db.session.query(Task).filter(Task.employee_backref.contains(employee))
-    count_completed_task = 0
-    for task in tasks:
-        if task.is_done:
-            count_completed_task+=1
-    try:
-        employee.count_of_completed_tasks = count_completed_task
-        db.session.commit()
-    except:
-        pass
     print(tasks)
     return render_template('employee_show.html', menu=menu, employee=employee, tasks=tasks)
 
@@ -204,7 +184,7 @@ def employee_show(id):
 def task_update(id):
     form = FormTaskUpdate.new()
     task = Task.query.get_or_404(id)
-
+    is_done_first = task.is_done
     if request.method == 'GET': # якщо ми відкрили сторнку для редагування, записуємо у поля форми значення з БД
         form.title.data = task.title
         form.description.data = task.description
@@ -226,6 +206,11 @@ def task_update(id):
             employers = form.employee.data
             task.employee_backref.clear()
             for employee in employers:
+                empl = Employee.query.get_or_404(employee)
+                if is_done_first and task.is_done==False:
+                    empl.count_of_completed_tasks = empl.count_of_completed_tasks - 1
+                elif is_done_first==False and task.is_done:
+                    empl.count_of_completed_tasks = empl.count_of_completed_tasks + 1
                 task.employee_backref.append(Employee.query.get_or_404(employee))
             try:
                 db.session.commit()
