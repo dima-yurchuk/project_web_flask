@@ -1,7 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SECRET_KEY = 'asfdsfsaaf'
+SECRET_KEY = 'asfdsfsaaffdf'
 WTF_CRSF_ENAVLED = True
 # Database
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \

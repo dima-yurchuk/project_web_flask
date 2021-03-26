@@ -162,7 +162,7 @@ class RegistrationForm(FlaskForm):
     )
     confirm_password = PasswordField(
         'Confirm password',
-        validators=[DataRequired(), EqualTo('password')]
+        validators=[DataRequired(), EqualTo('password', message='Паролі не збігаються!')]
     )
     submit = SubmitField('Sing up')
     def validate_email(self, field):

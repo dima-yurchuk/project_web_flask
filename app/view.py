@@ -9,23 +9,30 @@ from . import db
 import json
 from sqlalchemy import case
 from flask_login import login_user, current_user, logout_user, login_required
+
+
 # app = Flask(__name__)
 menu = {'Головна':'/', 'Коротка інформація':'/info', 'Мої досягнення':'/achievement', 'Contact':'/contact', 'FormTask':'/task', 'Login':'/login'}
 today = date.today()
 age = today.year - 2001 - ((today.month, today.day) < (4, 14))
+
+
 @app.route('/')
 def index():
     return render_template('index.html', menu=menu, my_os=os.uname(),
                            user_agent=request.headers.get('User-Agent'), version=sys.version,
                            time_now=datetime.now().strftime("%H:%M"))
 
+
 @app.route('/info')
 def info():
     return render_template('info.html', menu=menu,age=age, month=today.month, day=today.day)
 
+
 @app.route('/achievement')
 def achievement():
     return render_template('achievement.html', menu=menu)
+
 
 @app.route('/contact', methods=["GET", "POST"])
 def contact():
@@ -298,52 +305,48 @@ def employee_delete(id):
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('task'))
     form = RegistrationForm()
-    if request.method == "POST":
-        if form.validate_on_submit():
-            username = form.username.data
-            email = form.email.data
-            password = form.password.data
-            user = User(username=username, email=email, password=password)
-            try:
-                db.session.add(user)
-                db.session.commit()
-                flash(f'Account cereated for {form.username.data}!', category='seccess')
-            except:
-                db.session.rollback()
-                flash('Error adding data in DB!', 'error')
-            return redirect(url_for('login'))
+    if form.validate_on_submit():
+        username = form.username.data
+        email = form.email.data
+        password = form.password.data
+        user = User(username=username, email=email, password=password)
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash(f'Account cereated for {form.username.data}!', category='seccess')
+        except:
+            db.session.rollback()
+            flash('Error adding data in DB!', 'error')
+        return redirect(url_for('login'))
     return render_template('register.html', form=form, title='Register', menu=menu)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('task'))
     form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
         user_in_db = User.query.filter(User.email==email).first()
-        if user_in_db is None:
-            flash('Некоректні дані!', category='error')
-            return redirect(url_for('login'))
-        elif user_in_db.veryfy_password(password):
+        if user_in_db and user_in_db.veryfy_password(password):
             login_user(user_in_db, remember=form.remember.data)
-            del menu['Login']
-            menu['Профіль'] = '/account'
-            menu['Вихід'] = '/logout'
+            # del menu['Login']
+            # menu['Профіль'] = '/account'
+            # menu['Вихід'] = '/logout'
             flash('Ви успішно ввійшли!', category='success')
             return redirect(url_for('task'))
         else:
-            flash('Неправильний пароль!', category='error')
+            flash('Неправильні дані!', category='error')
     return render_template('login.html', menu=menu, form=form, title='Login')
 
 @app.route('/logout')
 def logout():
-    del menu['Профіль']
-    del menu['Вихід']
-    menu['Login'] = '/login'
+    # del menu['Профіль']
+    # del menu['Вихід']
+    # menu['Login'] = '/login'
     logout_user()
     flash('Ви вийшли зі свого акаунту!')
     return redirect(url_for("task"))

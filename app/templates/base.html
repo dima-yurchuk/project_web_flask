@@ -21,16 +21,26 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
+          <a class="nav-link active"  href="/" style="font-size:25px;">Головна</a>
+          <a class="nav-link active"  href="/info" style="font-size:25px;">Коротка інформація</a>
+          <a class="nav-link active"  href="/achievement" style="font-size:25px;">Мої досягнення</a>
+          <a class="nav-link active"  href="/contact" style="font-size:25px;">Contact</a>
+          <a class="nav-link active"  href="/task" style="font-size:25px;">FormTask</a>
+          {%if current_user.is_authenticated%}
+          <a class="nav-link active"  href="/account" style="font-size:25px;">Профіль</a>
+          <a class="nav-link active"  href="/logout" style="font-size:25px;">Вихід</a>
+          {%else%}
+          <a class="nav-link active"  href="/login" style="font-size:25px;">Login</a>
+          {%endif%}
 
-          {%for elem in menu%}
-          <a class="nav-link active"  href="{{menu[elem]}}" style="font-size:25px;">{{elem}}</a>
-          {% endfor %}
+<!--          {%for elem in menu%}-->
+<!--          <a class="nav-link active"  href="{{menu[elem]}}" style="font-size:25px;">{{elem}}</a>-->
+<!--          {% endfor %}-->
       </div>
     </div>
   </div>
 </nav>
-
-                {% for category, message in get_flashed_messages(with_categories=true) %}
+            {% for category, message in get_flashed_messages(with_categories=true) %}
                     <div align="center" class="alert alert-{{ category }}">
                     {{ message }}
                     </div>
