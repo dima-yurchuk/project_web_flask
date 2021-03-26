@@ -7,7 +7,6 @@
       <form method="POST" action="{{ url_for('employee_create') }}">
                   {{form.csrf_token}}
                   {{ render_field(form.name) }}
-                  {{ render_field(form.count_of_completed_tasks) }}
           <br>
           {{ form.submit(class="btn btn-light btn-lg") }}
       </form>

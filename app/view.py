@@ -84,6 +84,17 @@ def category():
 @app.route('/employee', methods=["GET", "POST"])
 def employee():
     employers = Employee.query.all()
+    for empl in employers:
+        tasks = db.session.query(Task).filter(Task.employee_backref.contains(empl))
+        count_completed_task = 0
+        for task in tasks:
+            if task.is_done:
+                count_completed_task += 1
+        try:
+            empl.count_of_completd_task = count_completed_task
+            db.session.commit()
+        except:
+            pass
     return render_template('employers.html', title='Список категорій', menu=menu,  employers=employers)
 
 
@@ -144,8 +155,7 @@ def employee_create():
     form = EmployeeCreate()
     if form.validate_on_submit():
         name = form.name.data
-        count_of_completed_tasks = form.count_of_completed_tasks.data
-        employee = Employee(name=name, count_of_completed_tasks=count_of_completed_tasks)
+        employee = Employee(name=name, count_of_completed_tasks=0)
         print(employee)
         try:
             db.session.add(employee)
@@ -178,8 +188,17 @@ def employee_show(id):
     employee = Employee.query.get_or_404(id)
     # tasks = db.session.query(Task).filter(Task.employee_backref.contains(employee)).all()
     tasks = db.session.query(Task).filter(Task.employee_backref.contains(employee))
+    count_completed_task = 0
+    for task in tasks:
+        if task.is_done:
+            count_completed_task+=1
+    try:
+        employee.count_of_completed_tasks = count_completed_task
+        db.session.commit()
+    except:
+        pass
     print(tasks)
-    return render_template('employee_show.html', menu=menu, employee=employee, tasks=tasks, len_tasks=db.session.query(Task).filter(Task.employee_backref.contains(employee)).count())
+    return render_template('employee_show.html', menu=menu, employee=employee, tasks=tasks)
 
 @app.route('/task/<int:id>/update', methods=["GET", "POST"])
 def task_update(id):
@@ -250,13 +269,11 @@ def employee_update(id):
 
     if request.method == 'GET': # якщо ми відкрили сторнку для редагування, записуємо у поля форми значення з БД
         form.name.data = employee.name
-        form.count_of_completed_tasks.data = employee.count_of_completed_tasks
         return render_template('employee_update.html', title='Employee Update', form=form, menu=menu)
 
     else: # інакше якщо ми змінили дані і натиснули кнопку
         if form.validate_on_submit() or request.method=='POST':
             employee.name = form.name.data
-            employee.count_of_completed_tasks = form.count_of_completed_tasks.data
             try:
                 db.session.commit()
                 flash('Employee seccessfully updated', 'info')
