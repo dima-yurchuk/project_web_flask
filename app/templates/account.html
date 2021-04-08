@@ -3,5 +3,42 @@
 {%block title%}{% endblock %}
 {%block content%}
 {%from "_render_field.html" import render_field%}
-<h1 align="center" class="account_user">{{current_user.username}}</h1>
+<div align="center">
+    <div class="text-center card-box" style="background-color:rgba(197, 217, 226, 0.3);border: 4px inset rgb(177, 203, 206); width:30%">
+         <div class="member-card pt-2 pb-2">
+            <div class="thumb-lg member-thumb mx-auto">
+                 <img src="{{user_img}}" class="rounded-circle img-thumbnail" style="wigth:100px; height:100px;" alt="profile-image">
+                 <h1 align="center" class="account_user">{{current_user.username}}</h1>
+                 <h4 align="center" class="account_user">{{current_user.email}}</h4>
+                 <div class="last_seen">Last seeen: {{ current_user.last_seen}}</div>
+                 <div align="center">
+                     <form method="POST" action="{{ url_for('account') }}" enctype="multipart/form-data">
+                         {{form.csrf_token}}
+                         {{ render_field(form.username, class="form-control", placeholder="username") }}
+                         {{ render_field(form.email, class="form-control", placeholder="email") }}
+                         {{ render_field(form.about_me, class="form-control", placeholder="about_me") }}
+                         {{ render_field(form.picture) }}
+                         {{ render_field(form.old_password, required=False, class="form-control", placeholder="old password") }}
+                         {{ render_field(form.password, required=False, class="form-control", placeholder="password") }}
+                         {{ render_field(form.confirm_password, required=False,  class="form-control", placeholder="confirm password") }}<br>
+                         {{ form.submit(class="btn btn-light btn-lg") }}
+                     </form>
+<!--                      <a href="/change_password" class="btn btn-info fs-5"> Change password</a>-->
+                </div>
+            </div>
+         </div>
+    </div>
+</div>
+
+
+
+<!--<div class="container-fluid">-->
+<!--    <div align="center" class="media">-->
+<!--        <img class="rounded-circle account-img" src="{{user_img}}" style="wigth:50px; height:50px;">-->
+<!--        <div class="media-body" style="color:white;">-->
+<!--            <h1 align="center" class="account_user">{{current_user.username}}</h1>-->
+<!--            <h4 align="center" class="account_user">{{current_user.email}}</h4>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 {% endblock %}

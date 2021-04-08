@@ -2,14 +2,33 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from datetime import datetime, date
 import sys
 import os
-from app import app
-from app.forms import ContactForm, FormTaskCreate, FormTaskUpdate,CategoryCreate, EmployeeCreate, RegistrationForm,LoginForm
+from os import abort
+from app import app, bcrypt
+from app.forms import ContactForm, FormTaskCreate, FormTaskUpdate,CategoryCreate, EmployeeCreate, RegistrationForm,\
+    LoginForm, UpdateAccountForm, ChangePassword
 from .models import Task, Category, Employee, User
 from . import db
 import json
 from sqlalchemy import case
 from flask_login import login_user, current_user, logout_user, login_required
+from is_safe_url import is_safe_url
+import secrets
+from PIL import Image
 
+
+
+def save_picture(form_picture):
+    rendom_hex = secrets.token_hex(8)
+    f_name, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = rendom_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
+    # form_picture.save(picture_path)
+    # return  picture_fn
+    output_size = (100, 100)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+    return picture_fn
 
 # app = Flask(__name__)
 menu = {'Головна':'/', 'Коротка інформація':'/info', 'Мої досягнення':'/achievement', 'Contact':'/contact', 'FormTask':'/task', 'Login':'/login'}
@@ -113,7 +132,7 @@ def task_create():
             flash('Data added in DB', 'success')
         except:
             db.session.rollback()
-            flash('Error adding data in DB!', 'error')
+            flash('Error adding data in DB!', 'danger')
         return redirect(url_for('task'))
     elif request.method=='POST':
         flash('Unseccess!', 'error')
@@ -132,7 +151,7 @@ def category_create():
             flash('Data added in DB', 'success')
         except:
             db.session.rollback()
-            flash('Error adding data in DB!', 'error')
+            flash('Error adding data in DB!', 'danger')
         return redirect(url_for('task'))
     elif request.method=='POST':
         flash('Unseccess!', 'error')
@@ -153,7 +172,7 @@ def employee_create():
             flash('Data added in DB', 'success')
         except:
             db.session.rollback()
-            flash('Error adding data in DB!', 'error')
+            flash('Error adding data in DB!', 'danger')
         return redirect(url_for('employee'))
     elif request.method=='POST':
         flash('Unseccess!', 'error')
@@ -217,10 +236,10 @@ def task_update(id):
                 flash('Task seccessfully updated', 'info')
             except:
                 db.session.rollback()
-                flash('Error while update task!', 'error')
+                flash('Error while update task!', 'danger')
             return redirect(url_for('task'))
         else:
-            flash('Error when walidate!', 'error')
+            flash('Error when walidate!', 'danger')
             return redirect(f'/task/{id}/update')
 
 @app.route('/category/<int:id>/update', methods=["GET", "POST"])
@@ -240,10 +259,10 @@ def category_update(id):
                 flash('Category seccessfully updated', 'info')
             except:
                 db.session.rollback()
-                flash('Error while update category!', 'error')
+                flash('Error while update category!', 'danger')
             return redirect(url_for('task'))
         else:
-            flash('Error when walidate!', 'error')
+            flash('Error when walidate!', 'danger')
             return redirect(f'/category/{id}/update')
 
 
@@ -264,10 +283,10 @@ def employee_update(id):
                 flash('Employee seccessfully updated', 'info')
             except:
                 db.session.rollback()
-                flash('Error while update employee!', 'error')
+                flash('Error while update employee!', 'danger')
             return redirect(url_for('employee'))
         else:
-            flash('Error when walidate!', 'error')
+            flash('Error when walidate!', 'danger')
             return redirect(f'/employee/{id}/update')
 
 
@@ -279,7 +298,7 @@ def task_delete(id):
         db.session.commit()
         flash('Task seccessfully deleted', 'success')
     except:
-        flash('Error while delete task!', 'error')
+        flash('Error while delete task!', 'danger')
     return redirect(url_for('task'))
 
 @app.route('/category/<int:id>/delete', methods=["GET", "POST"])
@@ -290,7 +309,7 @@ def category_delete(id):
         db.session.commit()
         flash('Category seccessfully deleted', 'success')
     except:
-        flash('Error while category deleted!', 'error')
+        flash('Error while category deleted!', 'danger')
     return redirect(url_for('task'))
 
 @app.route('/employee/<int:id>/delete', methods=["GET", "POST"])
@@ -301,7 +320,7 @@ def employee_delete(id):
         db.session.commit()
         flash('Employee seccessfully deleted', 'success')
     except:
-        flash('Error while employee deleted!', 'error')
+        flash('Error while employee deleted!', 'danger')
     return redirect(url_for('employee'))
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -317,10 +336,10 @@ def register():
         try:
             db.session.add(user)
             db.session.commit()
-            flash(f'Account cereated for {form.username.data}!', category='seccess')
+            flash(f'Account cereated for {form.username.data}!', category='success')
         except:
             db.session.rollback()
-            flash('Error adding data in DB!', 'error')
+            flash('Error adding data in DB!', 'danger')
         return redirect(url_for('login'))
     return render_template('register.html', form=form, title='Register', menu=menu)
 
@@ -339,9 +358,21 @@ def login():
             # menu['Профіль'] = '/account'
             # menu['Вихід'] = '/logout'
             flash('Ви успішно ввійшли!', category='success')
+            next = request.args.get('next')
+            print('next post', next)
+            # from werkzeug.urls import url_parse
+            # next_page = request.args.get('next')
+            # if not next_page or url_parse(next_page).netloc != '':
+            #     next_page = url_for('index')
+            #
+            # if not is_safe_url(next, {'127.0.0.1:5000'}):
+            #     return abort(400)
+            #
+            # if next:
+            #     return redirect(next)
             return redirect(url_for('task'))
         else:
-            flash('Неправильні дані!', category='error')
+            flash('Неправильні дані!', category='danger')
     return render_template('login.html', menu=menu, form=form, title='Login')
 
 @app.route('/logout')
@@ -350,10 +381,70 @@ def logout():
     # del menu['Вихід']
     # menu['Login'] = '/login'
     logout_user()
-    flash('Ви вийшли зі свого акаунту!')
+    flash('Ви вийшли зі свого акаунту!', 'info')
     return redirect(url_for("task"))
 
-@app.route("/account")
+@app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('account.html',  menu=menu, title='Account')
+    form = UpdateAccountForm()
+    user_img = url_for('static', filename = 'profile_pics/'+current_user.image_file)
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        current_user.about_me = form.about_me.data
+        if form.password.data:
+            if current_user.veryfy_password(form.old_password.data):
+                current_user.password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            else:
+                flash('Incorrect old password!', 'danger')
+                return redirect(url_for('account'))
+        try:
+            db.session.commit()
+            flash('User seccessfully updated', 'info')
+            return redirect(url_for('account'))
+        except:
+            db.session.rollback()
+            flash('Error while update user!', 'danger')
+            return redirect(url_for('account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.about_me.data = current_user.about_me
+    return render_template('account.html',  menu=menu, title='Account', user_img=user_img, form=form)
+
+@app.route("/change_password", methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePassword()
+    user_in_db = User.query.filter(User.email == current_user.email).first()
+    user_img = url_for('static', filename = 'profile_pics/'+current_user.image_file)
+    if form.validate_on_submit():
+        if user_in_db.veryfy_password(form.old_password.data):
+            current_user.password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            try:
+                db.session.commit()
+                flash('Password seccessfully updated', 'info')
+                return redirect(url_for('account'))
+            except:
+                db.session.rollback()
+                flash('Error while update password!', 'danger')
+                return redirect(url_for('account'))
+        else:
+            flash('Incorrect old password!', 'danger')
+            return redirect(url_for('change_password'))
+    return render_template('change_password.html',  menu=menu, title='Account', user_img=user_img, form=form)
+
+
+@app.after_request
+def after_request(response):
+    if current_user:
+        current_user.last_seen = datetime.now()
+        try:
+            db.session.commit()
+        except:
+            flash('Error while update user last seen!', 'danger')
+    return response

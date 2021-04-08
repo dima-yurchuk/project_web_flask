@@ -52,11 +52,15 @@ color: white;
 }
 .form_label{
     color:white;
-     font-size:30px;
+     font-size:25px;
 }
 .error_form{
     color:#ecb9af;
 }
 .account_user{
     color:white;
+}
+.last_seen{
+    color:#e5ebe8;
+    font-weight:bold;
 }

@@ -1,3 +1,9 @@
+ python3 manage.py db migrate
+ python3 manage.py db upgrade
+
+
+
+
 >>> from app import db
 >>> db
 <SQLAlchemy engine=sqlite:////home/dhouse/project_web_flask/form.db>
