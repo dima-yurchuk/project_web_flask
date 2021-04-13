@@ -4,7 +4,7 @@
 {%block contact_form%}
 {%from "_render_field.html" import render_field%}
  <div class="form-login" align="center">
-      <form method="POST" action="{{ url_for('login') }}">
+      <form method="POST" action="{{ url_for('user_bp_in.login') }}">
                  {{form.csrf_token}}
           {{ render_field(form.email, class="form-control", placeholder="email") }}
           {{ render_field(form.password, class="form-control", placeholder="password") }}

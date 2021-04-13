@@ -10,9 +10,9 @@
                  <img src="{{user_img}}" class="rounded-circle img-thumbnail" style="wigth:100px; height:100px;" alt="profile-image">
                  <h1 align="center" class="account_user">{{current_user.username}}</h1>
                  <h4 align="center" class="account_user">{{current_user.email}}</h4>
-                 <div class="last_seen">Last seeen: {{ current_user.last_seen}}</div>
+                 <div class="last_seen">Last seeen: {{ current_user.last_seen.strftime('%Y-%m-%d %H:%m') }}</div>
                  <div align="center">
-                     <form method="POST" action="{{ url_for('account') }}" enctype="multipart/form-data">
+                     <form method="POST" action="{{ url_for('user_bp_in.account') }}" enctype="multipart/form-data">
                          {{form.csrf_token}}
                          {{ render_field(form.username, class="form-control", placeholder="username") }}
                          {{ render_field(form.email, class="form-control", placeholder="email") }}
