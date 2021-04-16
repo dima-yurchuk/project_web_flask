@@ -23,8 +23,8 @@ def create_app(config_filename=None):
         from .task import task_bp
         from .contact_form import contact_form_bp
         from . import view
-        app.register_blueprint(user_bp, url_prefix='')
-        app.register_blueprint(task_bp, url_prefix='')
+        app.register_blueprint(user_bp, url_prefix='/auth')
+        app.register_blueprint(task_bp, url_prefix='/tasks_bp')
         app.register_blueprint(contact_form_bp, url_prefix='')
         # initialize_extensions(app)
         # register_blueprints(app)

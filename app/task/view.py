@@ -202,7 +202,7 @@ def employee_update(id):
             except:
                 db.session.rollback()
                 flash('Error while update employee!', 'danger')
-            return redirect(url_for('task_bp_in.employee'))
+            return redirect(url_for('.employee'))
         else:
             flash('Error when walidate!', 'danger')
             return redirect(f'/employee/{id}/update')
@@ -217,7 +217,7 @@ def task_delete(id):
         flash('Task seccessfully deleted', 'success')
     except:
         flash('Error while delete task!', 'danger')
-    return redirect(url_for('task_bp_in.task'))
+    return redirect(url_for('.task'))
 
 @task_bp.route('/category/<int:id>/delete', methods=["GET", "POST"])
 def category_delete(id):
@@ -228,7 +228,7 @@ def category_delete(id):
         flash('Category seccessfully deleted', 'success')
     except:
         flash('Error while category deleted!', 'danger')
-    return redirect(url_for('task_bp_in.task'))
+    return redirect(url_for('.task'))
 
 @task_bp.route('/employee/<int:id>/delete', methods=["GET", "POST"])
 def employee_delete(id):
@@ -239,4 +239,4 @@ def employee_delete(id):
         flash('Employee seccessfully deleted', 'success')
     except:
         flash('Error while employee deleted!', 'danger')
-    return redirect(url_for('task_bp_in.employee'))
+    return redirect(url_for('.employee'))
