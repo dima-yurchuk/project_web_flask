@@ -68,8 +68,11 @@ class UserModelView(ModelView):
     )
     def scaffold_form(self):
         form_class = super(UserModelView, self).scaffold_form()
-        form_class.password = PasswordField(
-            'Password'
+        form_class.password= PasswordField(
+            'Password',
+            validators=[Length(min=8,
+                               message='Поле повинно бути довжиною більше 8 символів!'),
+                        DataRequired(message="Це поле є обов'язковим!")]
         )
         form_class.new_password = PasswordField('New Password')
         form_class.confirm = PasswordField('Confirm New Password')
