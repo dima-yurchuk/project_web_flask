@@ -32,6 +32,11 @@
           {%else%}
           <a class="nav-link active"  href={{url_for('user_bp_in.login')}} style="font-size:25px;">Login</a>
           {%endif%}
+
+          {%if current_user.admin%}
+              <a class="nav-link active"  href={{url_for('user_bp_in.home_admin')}} style="font-size:25px;">Admin</a>
+              <a class="nav-link active"  href={{url_for('admin.index')}} style="font-size:25px;">Flask Admin</a>
+          {%endif%}
 <!--          {%for elem in menu%}-->
 <!--          <a class="nav-link active"  href="{{menu[elem]}}" style="font-size:25px;">{{elem}}</a>-->
 <!--          {% endfor %}-->

@@ -1,0 +1,42 @@
+{% extends "base_admin.html" %}
+
+{%block title%}{% endblock %}
+{%block content%}
+{%from "_render_field.html" import render_field%}
+<div class="form-wrapper" align="center">
+      <form method="POST" action="{{ url_for('user_bp_in.user_create_admin') }}" style="font-size:25px; color:#6d7176;">
+                  {{form.csrf_token}}
+                  <b>{{ form.username.label }}</b><br>
+                  {{ form.username }}<br>
+                  <div class="error_form_admin">
+                      {%for error in form.username.errors%}
+                      {{error}}
+                      {%endfor%}
+                  </div>
+                  <b>{{ form.email.label }}</b><br>
+                  {{ form.email }}<br>
+                 <div class="error_form_admin">
+                     {%for error in form.email.errors%}
+                     {{error}}
+                     {%endfor%}
+                 </div>
+                  <b>{{ form.password.label }}</b><br>
+                  {{ form.password }}<br>
+                  <div class="error_form_admin">
+                     {%for error in form.password.errors%}
+                     {{error}}
+                     {%endfor%}
+                  </div>
+                  <b>{{ form.admin.label }}</b><br>
+                  {{form.admin }}
+          <br>
+          {{ form.submit(class="btn btn-secondary btn-lg") }}
+          <br><br>
+      </form>
+</div>
+<!--    </div>-->
+{% endblock %}
+
+
+
+

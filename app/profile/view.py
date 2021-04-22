@@ -1,15 +1,16 @@
 from flask import render_template, request, redirect, url_for, flash
 import os, secrets
+from os import abort
 from flask_login import login_user, current_user, logout_user, login_required
 from PIL import Image
 from datetime import datetime
 
 from app.profile import user_bp
 from app import bcrypt
-from .form import  RegistrationForm, LoginForm, UpdateAccountForm
+from .form import  RegistrationForm, LoginForm, UpdateAccountForm, AdminUserCreateForm, AdminUserUpdateForm
 from .models import User
 from app import db, login_manager
-
+from functools import wraps
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -28,6 +29,103 @@ def save_picture(form_picture):
     i.save(picture_path)
     return picture_fn
 
+
+from flask_admin import BaseView, expose, AdminIndexView
+from flask_admin.contrib.fileadmin import FileAdmin
+from flask_admin.contrib.sqla import ModelView
+from wtforms import PasswordField, StringField
+from wtforms.validators import DataRequired, Length, Email
+from flask_admin.form import rules
+class CustomView(BaseView):
+    @expose('/')
+    # @login_required
+    # @has_role('admin')
+    def index(self):
+        return self.render('admin/custom.html')
+
+    @expose('/second_page')
+    # @login_required
+    # @has_role('admin')
+    def second_page(self):
+        return self.render('admin/second_page.html')
+
+class UserModelView(ModelView):
+    column_searchable_list = ('username',)
+    column_sortable_list = ('username', 'admin')
+    # column_list = ('username', 'email', 'admin','password', )
+    column_exclude_list = ('pwdhash',)
+    form_excluded_columns = ('pwdhash',)
+    # form_edit_rules = ('username', 'admin')
+    # form_create_rules = ('username', 'password', 'admin')
+
+    form_edit_rules = (
+        'username', 'email', 'admin',
+        rules.Header('Reset Password'),
+        'new_password', 'confirm'
+    )
+    form_create_rules = (
+        'username', 'email', 'admin', 'password'
+    )
+    def scaffold_form(self):
+        form_class = super(UserModelView, self).scaffold_form()
+        form_class.password = PasswordField(
+            'Password'
+        )
+        form_class.new_password = PasswordField('New Password')
+        form_class.confirm = PasswordField('Confirm New Password')
+        return form_class
+
+    def create_model(self, form):
+        model = self.model(
+            form.username.data, form.email.data, bcrypt.generate_password_hash(form.password.data).decode('utf-8'),
+            form.admin.data
+        )
+        # form.populate_obj(model)
+        self.session.add(model)
+        self._on_model_change(form, model, True)
+        self.session.commit()
+
+    def update_model(self, form, model):
+        form.populate_obj(model)
+        if form.new_password.data:
+            if form.new_password.data != form.confirm.data:
+                flash('Passwords must match')
+                return
+            model.password = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+        self.session.add(model)
+        self._on_model_change(form, model, False)
+        self.session.commit()
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.admin
+
+    def inaccessible_callback(self, name, *kwargs):
+        return redirect(url_for('index', next=request.url))
+
+class CustomFileAdmin(FileAdmin):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.admin
+
+    def inaccessible_callback(self, name, *kwargs):
+        return redirect(url_for('index', next=request.url))
+
+class MyAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.is_authenticated  and current_user.admin
+
+    def inaccessible_callback(self, name, *kwargs):
+        return redirect(url_for('index', next=request.url))
+
+
+
+def admin_login_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if not current_user.is_admin():
+            return abort(403)
+        return func(*args, **kwargs)
+    return decorated_view
+
 @user_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -37,7 +135,8 @@ def register():
         username = form.username.data
         email = form.email.data
         password = form.password.data
-        user = User(username=username, email=email, password=password)
+        admin = False
+        user = User(username=username, email=email, password=password, admin=admin)
         try:
             db.session.add(user)
             db.session.commit()
@@ -121,6 +220,87 @@ def account():
         form.email.data = current_user.email
         form.about_me.data = current_user.about_me
     return render_template('account.html', title='Account', user_img=user_img, form=form)
+
+
+
+@user_bp.route('/administrator')
+# @login_required
+# @admin_login_required
+def home_admin():
+  return render_template('admin-home.html', title='Home')
+
+@user_bp.route('/administrator/users-list')
+@login_required
+@admin_login_required
+def users_list_admin():
+    users = User.query.all()
+    return render_template('users-list-admin.html', title='List users', users=users)
+
+@user_bp.route('/administrator/create-user',  methods=['GET', 'POST'])
+@login_required
+@admin_login_required
+def user_create_admin():
+    form = AdminUserCreateForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        email = form.email.data
+        password = form.password.data
+        admin = form.admin.data
+        user = User(username=username, email=email, password=password, admin=admin)
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('Data added in DB', 'success')
+        except:
+            db.session.rollback()
+            flash('Error adding data in DB!', 'danger')
+        return redirect(url_for('user_bp_in.users_list_admin'))
+    # elif request.method == 'POST':
+    #     flash('Unseccess!', 'error')
+    #     return redirect(url_for('user_bp_in.user_create_admin'))
+    return render_template('user-create-admin.html', title='Create user', form=form)
+
+
+@user_bp.route('/administrator/update-user/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_login_required
+def user_update_admin(id):
+    form = AdminUserUpdateForm()
+    user = User.query.get_or_404(id)
+    if form.validate_on_submit():
+            user.username = form.username.data
+            user.email = form.email.data
+            user.admin = form.admin.data
+            try:
+                db.session.commit()
+                flash('User seccessfully updated', 'info')
+            except:
+                db.session.rollback()
+                flash('Error while update user!', 'danger')
+            return redirect(url_for('user_bp_in.users_list_admin'))
+    else:
+        form.username.data = user.username
+        form.email.data = user.email
+        form.admin.data = user.admin
+        return render_template('user-update-admin.html', title='Update user', form=form, user=user)
+
+
+
+
+
+@user_bp.route('/administrator/delete-user/<int:id>')
+@login_required
+@admin_login_required
+def user_delete_admin(id):
+    user = User.query.get_or_404(id)
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        flash('User seccessfully deleted', 'success')
+    except:
+        flash('Error while user deleted!', 'danger')
+    return redirect(url_for('.home_admin'))
+
 
 @user_bp.after_request
 def after_request(response):

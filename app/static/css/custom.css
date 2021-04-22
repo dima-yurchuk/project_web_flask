@@ -57,10 +57,19 @@ color: white;
 .error_form{
     color:#ecb9af;
 }
+.error_form_admin{
+    color:red;
+}
 .account_user{
     color:white;
 }
 .last_seen{
     color:#e5ebe8;
     font-weight:bold;
+}
+
+.navbar-nav.navbar-center {
+    position: absolute;
+    left: 50%;
+    transform: translatex(-50%);
 }

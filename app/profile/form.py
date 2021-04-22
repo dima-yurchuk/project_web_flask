@@ -7,7 +7,6 @@ from flask_wtf.file import FileField, FileAllowed
 from .models import User
 
 
-
 class RegistrationForm(FlaskForm):
     username = StringField(
         'Username',
@@ -152,3 +151,54 @@ class UpdateAccountForm(FlaskForm):
     def validate_confirm_password(self, field):
         if not self.old_password.data or not self.password.data or not self.confirm_password.data:
             raise ValidationError("Для зміни паролю необхідно заповнити 3 поля!")
+
+class AdminUserCreateForm(FlaskForm):
+    username = StringField(
+        'Username',
+        validators=[Length(min=3, max=30, message='Поле повинно бути довжиною від 3 до 30 симолів!'),
+                    DataRequired(message="Це поле є обов'язковим!"),
+                    Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                           "Ім'я повинно містити тільки англійські літери, цифри, крапку або нижнє підкреслення!")
+                    ]
+    )
+    email = StringField(
+        'Email',
+        validators=[DataRequired(), Email(message='Некоректна email адреса!')]
+    )
+    password = PasswordField(
+        'Password',
+        validators=[Length(min=8,
+                           message='Поле повинно бути довжиною більше 8 символів!'),
+                    DataRequired(message="Це поле є обов'язковим!")]
+    )
+    admin = BooleanField('Is Admin')
+    submit = SubmitField('Create')
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('Email уже існує!')
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError("Користувач з таким ім'я вже існує!")
+
+class AdminUserUpdateForm(FlaskForm):
+    username = StringField(
+        'Username',
+        validators=[Length(min=3, max=30, message='Поле повинно бути довжиною від 3 до 30 симолів!'),
+                    DataRequired(message="Це поле є обов'язковим!"),
+                    Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                           "Ім'я повинно містити тільки англійські літери, цифри, крапку або нижнє підкреслення!")
+                    ]
+    )
+    email = StringField(
+        'Email',
+        validators=[DataRequired(), Email(message='Некоректна email адреса!')]
+    )
+    admin = BooleanField('Is Admin')
+    submit = SubmitField('Update')
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first() and self.username.data:
+            self.email.flags.disabled = False
+
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError("Користувач з таким ім'я вже існує!")
