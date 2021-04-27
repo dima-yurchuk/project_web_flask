@@ -2,12 +2,15 @@
 
 {%block title%}Form task{% endblock %}
 {%block content%}
+
+<!-- include libraries(jQuery, bootstrap) -->
+
 {%from "_render_field.html" import render_field%}
  <div class="form-wrapper" align="center">
       <form method="POST" action="{{ url_for('task_bp_in.task_create') }}">
                   {{form.csrf_token}}
                   {{ render_field(form.title) }}
-                  {{ render_field(form.description) }}
+                  {{ render_field(form.description, id='editor') }}
                   {{ render_field(form.priority) }}
                   {{ render_field(form.category) }}
                   {{ render_field(form.employee) }}
@@ -16,5 +19,9 @@
       </form>
 </div>
 <br>
-
+<script>
+     $(document).ready(function() {
+     $('#editor').summernote({height: 150});
+     });
+</script>
 {% endblock %}

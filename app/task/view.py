@@ -10,8 +10,10 @@ from sqlalchemy import case
 
 @task_bp.route('/task', methods=["GET", "POST"])
 def task():
-    tasks = Task.query.order_by(case(value=Task.priority, whens={'low':2, 'medium':1, 'high':0}), Task.created).all()
-    return render_template('tasks.html', title='Список завдань',tasks=tasks)
+    # tasks = Task.query.order_by(case(value=Task.priority, whens={'low':2, 'medium':1, 'high':0}), Task.created).all()
+    page = request.args.get('page', 1, type=int)
+    tasks = Task.query.order_by(case(value=Task.priority, whens={'low':2, 'medium':1, 'high':0}), Task.created).paginate(page=page, per_page=5)
+    return render_template('tasks.html', title='Список завдань', tasks=tasks)
 
 @task_bp.route('/category', methods=["GET", "POST"])
 def category():

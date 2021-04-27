@@ -30,20 +30,15 @@
        <td class="table_form">{{task.category_backref.name}}</td>
       <td class="table_form">
            {% for empl in task.employee_backref %}
-               <a class="href_in_background" href="/employee/{{ empl.id }}">{{empl.name}}</a>
+               <a class="href_in_background" href="{{url_for('task_bp_in.employee')}}/{{ empl.id }}">{{empl.name}}</a>
            {%endfor%}
        </td>
   </tr>
   </tbody>
 </table>
-     <a href="/task/{{ task.id }}/update" class="btn btn-primary fs-5"> Edit </a>
-     <a href="/task/{{ task.id }}/delete" class="btn  btn-danger fs-5"> Delete </a>
-<!--     <form action="{{ url_for('task_bp_in.task_update', id=task.id) }}">-->
-<!--        <input  class="btn btn-primary" type="submit" value="Edit" />-->
-<!--     </form>-->
-<!--     <form action="{{ url_for('task_bp_in.task_delete', id=task.id) }}">-->
-<!--         <input  class="btn btn-danger" type="submit" value="Delete" />-->
-<!--     </form>-->
+     <a href="{{url_for('task_bp_in.task')}}/{{ task.id }}/update" class="btn btn-primary fs-5"> Edit </a>
+     <a href="{{url_for('task_bp_in.task')}}/{{ task.id }}/delete" class="btn  btn-danger fs-5"> Delete </a>
+
 </div>
 
 {% endblock %}

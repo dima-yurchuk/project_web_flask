@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextField, SubmitField, TextAreaField, \
     BooleanField, SelectField, IntegerField, SelectMultipleField, PasswordField, \
     DateTimeField
+from flask_ckeditor import CKEditorField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, Length
 
@@ -18,7 +19,7 @@ class FormTaskCreate(FlaskForm):
             validators=[DataRequired(message="Поле не можу бути пустим!")],
             render_kw={'size':31}
         )
-    description = TextAreaField(
+    description = CKEditorField(
             'Description',
             validators=[
                 DataRequired(),

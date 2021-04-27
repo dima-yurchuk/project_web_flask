@@ -36,6 +36,7 @@ from flask_admin.contrib.sqla import ModelView
 from wtforms import PasswordField, StringField
 from wtforms.validators import DataRequired, Length, Email
 from flask_admin.form import rules
+from wtforms import widgets, TextAreaField
 class CustomView(BaseView):
     @expose('/')
     # @login_required
@@ -49,23 +50,36 @@ class CustomView(BaseView):
     def second_page(self):
         return self.render('admin/second_page.html')
 
+class CKTextAreaWidget(widgets.TextArea):
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('class_', 'ckeditor')
+        return super(CKTextAreaWidget, self).__call__(field,**kwargs)
+
+class CKTextAreaField(TextAreaField):
+    widget = CKTextAreaWidget()
+
 class UserModelView(ModelView):
     column_searchable_list = ('username',)
     column_sortable_list = ('username', 'admin')
-    # column_list = ('username', 'email', 'admin','password', )
+    column_list = ('username', 'email', 'admin', )
     column_exclude_list = ('pwdhash',)
     form_excluded_columns = ('pwdhash',)
     # form_edit_rules = ('username', 'admin')
     # form_create_rules = ('username', 'password', 'admin')
 
     form_edit_rules = (
-        'username', 'email', 'admin',
+        'username', 'email', 'about_me', 'admin',
         rules.Header('Reset Password'),
         'new_password', 'confirm'
     )
     form_create_rules = (
         'username', 'email', 'admin', 'password'
     )
+
+    form_overrides = dict(about_me=CKTextAreaField)
+    create_template = 'edit.html'
+    edit_template = 'edit.html'
+
     def scaffold_form(self):
         form_class = super(UserModelView, self).scaffold_form()
         form_class.password= PasswordField(
@@ -138,8 +152,8 @@ def register():
         username = form.username.data
         email = form.email.data
         password = form.password.data
-        admin = False
-        user = User(username=username, email=email, password=password, admin=admin)
+        # admin = False
+        user = User(username=username, email=email, password=password)
         try:
             db.session.add(user)
             db.session.commit()
@@ -227,8 +241,8 @@ def account():
 
 
 @user_bp.route('/administrator')
-# @login_required
-# @admin_login_required
+@login_required
+@admin_login_required
 def home_admin():
   return render_template('admin-home.html', title='Home')
 

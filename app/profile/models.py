@@ -6,11 +6,12 @@ from app import bcrypt
 class User(db.Model, UserMixin):
 
 
-    def __init__(self, username, email, password, admin):
+    def __init__(self, username, email, password, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
         self.username=username
         self.email=email
         self.password=bcrypt.generate_password_hash(password).decode('utf-8')
-        self.admin = admin
+        # self.admin = admin
 
 
     id = db.Column(db.Integer, primary_key=True)

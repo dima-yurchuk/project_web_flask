@@ -23,10 +23,10 @@
     </tr>
   </thead>
   <tbody>
-  {% for task in tasks %}
+  {% for task in tasks.items %}
   <tr>
        <td class="table_form">{{task.id}}</td>
-       <td class="table_form"><a class="href_in_background" href={{url_for('task_bp_in.category')}}/{{task.id}}>{{task.title}}</a></td>
+       <td class="table_form"><a class="href_in_background" href={{url_for('task_bp_in.task')}}/{{task.id}}>{{task.title}}</a></td>
        <td class="table_form">{{task.description}}</td>
        <td class="table_form">{{task.created}}</td>
        <td class="table_form">{{task.priority.name}}</td>
@@ -34,15 +34,51 @@
        <td class="table_form">{{task.category_backref.name}}</td>
        <td class="table_form">
            {% for empl in task.employee_backref %}
-               <a class="href_in_background" href="/employee/{{ empl.id }}">{{empl.name}}</a>
+               <a class="href_in_background" href={{url_for('task_bp_in.employee')}}/{{ empl.id }}>{{empl.name}}</a>
            {%endfor%}
        </td>
   </tr>
   {%endfor%}
   </tbody>
 </table>
+
+
+    <!-- Pagination Links-->
+    <div class="text-right ">
+        <a href="{{ url_for('task_bp_in.task', page=tasks.prev_num) }}"
+           class="btn btn-outline-light
+           {% if tasks.page == 1 %}disabled{% endif %}">
+            &laquo;
+        </a>
+    <!-- Loop through the number of pages to display a link for each-->
+        {% for page_num in tasks.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+    {% if page_num %}
+    <!-- Check for the active page and set the link to "Active"-->
+                {% if tasks.page == page_num %}
+                <a href="{{ url_for('task_bp_in.task', page=page_num) }}"
+                   class="btn btn-light">
+                    {{ page_num }}
+                </a>
+                {% else %}
+                <a href="{{ url_for('task_bp_in.task', page=page_num) }}"
+                   class="btn btn-outline-light">
+                    {{ page_num }}
+                </a>
+                {% endif %}
+            {% else %}
+                <span style="color:white;">...</span>
+            {% endif %}
+        {% endfor %}
+        <a href="{{ url_for('task_bp_in.task', page=tasks.next_num) }}"
+           class="btn btn-outline-light
+           {% if tasks.page == tasks.pages %}disabled{% endif %}">
+            &raquo;
+        </a>
+    </div>
+    <p class="text-right mt-3" style="color:#c9eeee;">
+       Showing page {{ tasks.page }} of {{ tasks.pages }}
+    </p>
      <a class="btn btn btn-info" href={{url_for('task_bp_in.category')}} role="button">Categories</a>
      <a class="btn btn btn btn-success" href={{url_for('task_bp_in.employee')}} role="button">Employee</a>
-</div>
-
+ </div>
 {% endblock %}

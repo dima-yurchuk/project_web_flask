@@ -2,12 +2,15 @@
 
 {%block title%}Form task{% endblock %}
 {%block content%}
+<!-- include libraries(jQuery, bootstrap) -->
+
+
 {%from "_render_field.html" import render_field%}
  <div class="form-wrapper" align="center">
       <form method="POST">
                   {{form.csrf_token}}
                   {{ render_field(form.title) }}
-                  {{ render_field(form.description) }}
+                  {{ render_field(form.description, id='editor') }}
                   {{ render_field(form.created) }}
                   {{ render_field(form.priority) }}
                   {{ render_field(form.is_done) }}
@@ -18,5 +21,9 @@
       </form>
 </div>
 <br>
-
+<script>
+     $(document).ready(function() {
+     $('#editor').summernote({height: 150});
+     });
+</script>
 {% endblock %}
