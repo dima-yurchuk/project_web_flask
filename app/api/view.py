@@ -55,7 +55,7 @@ def login_api():
 @token_required
 def task_create(current_user):
    if not current_user.admin:
-      return jsonify({'message':'Cannot perform that function!'})
+      return jsonify({'message':'You do not have admin rights!'})
    data = request.get_json()
    try:
       title = data['title']
@@ -85,8 +85,8 @@ def task_create(current_user):
 @api_bp.route('/tasks/<int:id>', methods=["DELETE"])
 @token_required
 def task_delete(current_user,id):
-   # if current_user.admin:
-   #    return jsonify({'message':'Cannot perform that function!'})
+   if not current_user.admin:
+      return jsonify({'message': 'You do not have admin rights!'})
    task = Task.query.filter_by(id=id).first()
    if not task:
        return jsonify({'message': 'Task not found!'})
@@ -144,8 +144,8 @@ def tasks_show(current_user):
 @api_bp.route('/tasks/<int:id>', methods=["PUT"])
 @token_required
 def task_update(current_user, id):
-   # if current_user.admin:
-   #    return jsonify({'message':'Cannot perform that function!'})
+   if not current_user.admin:
+      return jsonify({'message': 'You do not have admin rights!'})
    task = Task.query.filter_by(id=id).first()
    if not task:
       return jsonify({'message': 'Task not found!'})
