@@ -27,7 +27,7 @@ def token_required(f):
           return jsonify({'message':'Token is missing!'}), 401
       try:
           data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-          current_user = User.query.filter_by(id=data['id']).first
+          current_user = User.query.filter_by(id=data['id']).first()
       except:
           return jsonify({'message':'Token is invalid!'}), 401
       return f(current_user, *args, **kwargs)
@@ -54,8 +54,8 @@ def login_api():
 @api_bp.route('/tasks', methods=["POST"])
 @token_required
 def task_create(current_user):
-   # if not current_user.admin:
-   #    return jsonify({'message':'Cannot perform that function!'})
+   if not current_user.admin:
+      return jsonify({'message':'Cannot perform that function!'})
    data = request.get_json()
    try:
       title = data['title']
