@@ -53,6 +53,8 @@ class TaskItem(Resource):
             return tasks_all
         else:
             task = Task.query.filter_by(id=id).first()
+            if not task:
+                return jsonify({'message': 'Task not found!'})
             return task
 
     @marshal_with(resource_fields, envelope='resource')
