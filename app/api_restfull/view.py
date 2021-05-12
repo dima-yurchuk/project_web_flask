@@ -16,18 +16,18 @@ resource_fields = {
 }
 
 task_create = reqparse.RequestParser()
-task_create.add_argument('title', type=str, help='Title is required', required=True)
-task_create.add_argument('description', type=str, help='Description is required', required=True)
-task_create.add_argument('priority', type=str, help='Priority is required', required=True)
-task_create.add_argument('category_id', type=int, help='Category id is required', required=True)
+task_create.add_argument('title', type=str, help='Title is required!', required=True)
+task_create.add_argument('description', type=str, help='Description is required!', required=True)
+task_create.add_argument('priority', type=str, help='Priority is required!', required=True)
+task_create.add_argument('category_id', type=int, help='Category id is required!', required=True)
 
 task_update = reqparse.RequestParser()
-task_update.add_argument('title', type=str, help='Title is required', required=True)
-task_update.add_argument('description', type=str, help='Description is required', required=True)
-task_update.add_argument('created', type=str, help='Created is required', required=True)
-task_update.add_argument('priority', type=str, help='Priority is required', required=True)
-task_update.add_argument('is_done', type=str, help='Is done is required', required=True)
-task_update.add_argument('category_id', type=int, help='Category id is required', required=True)
+task_update.add_argument('title', type=str, help='Title is required!', required=True)
+task_update.add_argument('description', type=str, help='Description is required!', required=True)
+task_update.add_argument('created', type=str, help='Created is required!', required=True)
+task_update.add_argument('priority', type=str, help='Priority is required!', required=True)
+task_update.add_argument('is_done', type=str, help='Is done is required!', required=True)
+task_update.add_argument('category_id', type=int, help='Category id is required!', required=True)
 
 class TaskItem(Resource):
 
