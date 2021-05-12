@@ -91,7 +91,5 @@ class TaskItem(Resource):
 
 
 
-# api.add_resource(TaskItem, '/tasks')
+
 api.add_resource(TaskItem, '/tasks', '/tasks/<int:id>')
-# api.add_resource(TaskItem, '/tasks/<int:id>')
-# api.add_resource(TaskItem, '/tasks')
