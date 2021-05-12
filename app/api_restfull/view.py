@@ -38,7 +38,7 @@ class TaskItem(Resource):
             db.session.add(task)
             db.session.commit()
             # return jsonify({'message': 'Data add in db!'}), 201 777   ?????
-            return make_response(jsonify({'message': 'Data add in db!'}), 201)
+            return make_response(jsonify({'message': 'Data add in db!'}))
         except:
             db.session.rollback()
             # return jsonify({'message': 'Error when adding data!'}) ?????
@@ -54,23 +54,23 @@ class TaskItem(Resource):
         else:
             task = Task.query.filter_by(id=id).first()
             if not task:
-                return jsonify({'message': 'Task not found!'})
+                return make_response(jsonify({'message': 'Task not found!'}))
             return task
 
-    @marshal_with(resource_fields, envelope='resource')
+    # @marshal_with(resource_fields, envelope='resource')
     def delete(self, id):
         task = Task.query.filter_by(id=id).first()
         if not task:
-            return jsonify({'message': 'Task not found!'}), 404
+            return make_response(jsonify({'message': 'Task not found!'}), 404)
         db.session.delete(task)
         db.session.commit()
-        return jsonify({'message': 'The task has been deleted'})
+        return  make_response(jsonify({'message': 'The task has been deleted'}))
 
-    @marshal_with(resource_fields, envelope='resource')
+    # @marshal_with(resource_fields, envelope='resource')
     def put(self, id):
         task = Task.query.filter_by(id=id).first()
         if not task:
-            return jsonify({'message': 'Task not found!'}), 404
+            return make_response(jsonify({'message': 'Task not found!'}), 404)
         args = task_update.parse_args()
 
         task.title = args['title']
@@ -82,8 +82,12 @@ class TaskItem(Resource):
         elif args['is_done']=='False':
             task.is_done = False
         task.category_id = args['category_id']
-        db.session.commit()
-        return jsonify({"message": "Task succesfully update!"})
+        try:
+            db.session.commit()
+            return make_response(jsonify({"message": "Task succesfully update!"}))
+        except:
+            db.session.rollback()
+            return make_response(jsonify({'message': 'Error when updating data!'}), 201)
 
 
 
