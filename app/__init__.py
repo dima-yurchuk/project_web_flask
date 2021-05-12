@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 
-
 # app = Flask(__name__)
 # app.config.from_object('config')
 db = SQLAlchemy()
@@ -23,11 +22,15 @@ def create_app(config_filename=None):
         from .task import task_bp
         from .contact_form import contact_form_bp
         from .api import api_bp
+        from .api_restfull import api_restfull_bp
+        from .swagger import swagger_bp
         from . import view
         app.register_blueprint(user_bp, url_prefix='/auth')
         app.register_blueprint(task_bp, url_prefix='/tasks_bp')
         app.register_blueprint(contact_form_bp, url_prefix='')
         app.register_blueprint(api_bp, url_prefix='/api')
+        app.register_blueprint(api_restfull_bp, url_prefix='/api/v2')
+        app.register_blueprint(swagger_bp, url_prefix='/swagger')
 
         from .profile import create_module as admin_create_module
         admin_create_module(app)

@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, m
 
 
 from app.task import task_bp
-from app.task.models import  Task, Category, Employee
+from app.task.models import  Task, Employee, Category
 from app import db
 from sqlalchemy import case
 from flask_login import login_user, current_user, logout_user, login_required
@@ -55,30 +55,29 @@ def login_api():
 @token_required
 def task_create(current_user):
    if not current_user.admin:
-      return jsonify({'message':'You do not have admin rights!'})
+      return jsonify({'message':'You do not have admin rights!'}), 403
    data = request.get_json()
    try:
       title = data['title']
       description = data['description']
-      # created = form.created.data
       priority = data['priority']
       category_id = data['category_id']
 
       category_id = db.session.query(Category.id).filter(Category.id == category_id)
 
-      employers = data['employee']
+      # employers = data['employee']
 
       task = Task(title=title, description=description, priority=priority, category_id=category_id)
 
 
-      for employee in employers:
-         task.employee_backref.append(Employee.query.get_or_404(employee))
+      # for employee in employers:
+      #    task.employee_backref.append(Employee.query.get_or_404(employee))
       db.session.add(task)
       db.session.commit()
-      return jsonify({'message':'Data add in db!'})
+      return jsonify({'message':'Data add in db!'}), 201
    except:
       db.session.rollback()
-      flash('Error adding data in DB!', 'danger')
+      # flash('Error adding data in DB!', 'danger')
       return jsonify({'message':'Error when adding data!'})
 
 
@@ -86,10 +85,10 @@ def task_create(current_user):
 @token_required
 def task_delete(current_user,id):
    if not current_user.admin:
-      return jsonify({'message': 'You do not have admin rights!'})
+      return jsonify({'message': 'You do not have admin rights!'}), 403
    task = Task.query.filter_by(id=id).first()
    if not task:
-       return jsonify({'message': 'Task not found!'})
+       return jsonify({'message': 'Task not found!'}), 404
    db.session.delete(task)
    db.session.commit()
    return jsonify({'message': 'The task has been deleted'})
@@ -145,19 +144,23 @@ def tasks_show(current_user):
 @token_required
 def task_update(current_user, id):
    if not current_user.admin:
-      return jsonify({'message': 'You do not have admin rights!'})
+      return jsonify({'message': 'You do not have admin rights!'}), 403
    task = Task.query.filter_by(id=id).first()
    if not task:
-      return jsonify({'message': 'Task not found!'})
+      return jsonify({'message': 'Task not found!'}), 404
 
    title = request.json['title']
    description = request.json['description']
+   created = request.json['created']
    priority = request.json['priority']
+   is_done = request.json['is_done']
    category_id = request.json['category_id']
 
    task.title = title
    task.description = description
+   task.created = datetime.datetime.strptime(created, '%a, %d %b %Y %H:%M:%S %Z')
    task.priority = priority
+   task.is_done = is_done
    task.category_id = category_id
    db.session.commit()
    return jsonify({"message":"Task succesfully update!"})
