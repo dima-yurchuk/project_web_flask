@@ -10,9 +10,9 @@ def create_tables():
     db.create_all()
     click.echo("tables created!!!")
 
-@click.command(name="create_user")
-@with_appcontext
-def create_user():
-    user = User(username='username', email='email', password='password')
-    db.session.add(user)
-    db.session.commit()
+# @click.command(name="create_user")
+# @with_appcontext
+# def create_user():
+#     user = User(username='username', email='email', password='password')
+#     db.session.add(user)
+#     db.session.commit()
