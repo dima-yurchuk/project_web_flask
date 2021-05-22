@@ -8,3 +8,4 @@ from app.task.models import Task, Category, Employee
 @with_appcontext
 def create_tables():
     db.create_all()
+    return db
