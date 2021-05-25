@@ -6,10 +6,8 @@ WTF_CRSF_ENAVLED = True
 # Database
 # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
 #         'sqlite:///' + os.path.join(basedir, 'form.db')
-# SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-SQLALCHEMY_DATABASE_URI = "postgres://yijbkrgthkzeou:d1a94533fb6656b607c35ed88d083750f86686519b4d8c6d782387dc32bd7e8a@ec2-54-228-99-58.eu-west-1.compute.amazonaws.com:5432/d15pdg7da4lr08"
-# SECRET_KEY = os.environ.get('SECRET_KEY')
-SECRET_KEY = 'asfdsfsaaffdf'
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # SQLALCHEMY_DATABASE_URI =  'sqlite:///form.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
