@@ -15,7 +15,7 @@ def create_tables():
     click.echo("tables created!!!")
 
 
-click.command(name='create_admin')
+@click.command(name='create_admin')
 @with_appcontext
 def create_admin():
     username = "test_admin"
