@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
 import sys
 import os
 from os import abort
 from flask import current_app as app
 # from app import app, bcrypt #  import current_app
-
+import pytz
 
 
 
@@ -16,9 +16,10 @@ age = today.year - 2001 - ((today.month, today.day) < (4, 14))
 
 @app.route('/')
 def index():
+    offset = timezone(timedelta(hours=3))
     return render_template('index.html', menu=menu, my_os=os.uname(),
                            user_agent=request.headers.get('User-Agent'), version=sys.version,
-                           time_now=datetime.now().strftime("%H:%M"))
+                           time_now=datetime.now(offset).strftime("%H:%M"))
 
 
 @app.route('/info')

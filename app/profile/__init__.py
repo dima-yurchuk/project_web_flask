@@ -7,12 +7,13 @@ from .view import MyAdminIndexView
 import warnings
 
 
-admin = Admin(index_view=view.MyAdminIndexView())
+# admin = Admin(index_view=view.MyAdminIndexView())
 def create_module(app, **kwargs):
     from .view import CustomView, UserModelView, CustomFileAdmin
     from .models import User
     from .. import db
     # admin = Admin(index_view=CustomView(), template_mode="bootstrap3")
+    admin = Admin(index_view=view.MyAdminIndexView())
     admin.init_app(app)
     admin.add_view(CustomView(name='Custom'))
     admin.add_view(UserModelView(User, db.session))
