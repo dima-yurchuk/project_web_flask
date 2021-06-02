@@ -165,7 +165,6 @@ def register():
     return render_template('register.html', form=form, title='Register')
 
 @user_bp.route('/login', methods=['GET', 'POST'])
-@user_bp.route('/login2', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('task_bp_in.task'))
