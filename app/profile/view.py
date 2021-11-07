@@ -12,6 +12,8 @@ from .models import User
 from app import db, login_manager
 from functools import wraps
 
+
+
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))
