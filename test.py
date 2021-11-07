@@ -20,23 +20,23 @@ class TestApp(TestCase):
         self.assertIn(b'PYTHON VESION', response.data)
 
 
-    def test_b_auth(self):
-        with self.client:
-            user = User(username='test333', email='test333@gmail.com', password='11111111')
-            db.session.add(user)
-            db.session.commit()
-            self.assertIn(db.session.query(User).filter_by(username='test333').first().email, 'test333@gmail.com')
-            response = self.client.post(
-                '/auth/login',
-                data=dict(email="test333@gmail.com", password="11111111"),
-                follow_redirects=True
-            )
-            user_in_db = User.query.filter(User.email == 'test333@gmail.com').first()
-            login_user(user_in_db)
-            self.assertIn(b'test333@gmail.com', response.data)
-            self.assertEqual(current_user.is_authenticated, True)
-            logout_user()
-            self.assertEqual(current_user.is_authenticated, False)
+    # def test_b_auth(self):
+    #     with self.client:
+    #         user = User(username='test333', email='test333@gmail.com', password='11111111')
+    #         db.session.add(user)
+    #         db.session.commit()
+    #         self.assertIn(db.session.query(User).filter_by(username='test333').first().email, 'test333@gmail.com')
+    #         response = self.client.post(
+    #             '/auth/login',
+    #             data=dict(email="test333@gmail.com", password="11111111"),
+    #             follow_redirects=True
+    #         )
+    #         user_in_db = User.query.filter(User.email == 'test333@gmail.com').first()
+    #         login_user(user_in_db)
+    #         self.assertIn(b'test333@gmail.com', response.data)
+    #         self.assertEqual(current_user.is_authenticated, True)
+    #         logout_user()
+    #         self.assertEqual(current_user.is_authenticated, False)
 
     def test_c_task_create(self):
         response = self.client.post(
